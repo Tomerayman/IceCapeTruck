@@ -9,6 +9,7 @@ public class MusciButtonScript : MonoBehaviour
     public AudioSource consoleSource;
     public MusicConsoleScript console;
     public string code;
+    private bool isColliding = false;
     
     // Start is called before the first frame update
     void Start()
@@ -21,16 +22,30 @@ public class MusciButtonScript : MonoBehaviour
     {
         
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Hand")
+        if (other.tag == "Hand" && !isColliding)
         {
-            Debug.Log("hine");
+            isColliding = true;
             consoleSource.clip = buttonSound;
             consoleSource.Play();
             console.JustPlayed(code);    
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        IEnumerator touchDelay()
+        {
+            yield return  new WaitForSeconds(0.3f);
+            isColliding = false;
+        }
+        
+        if (other.tag == "Hand" && isColliding)
+        {
+            StartCoroutine(touchDelay());
+        }
+    }
 }
